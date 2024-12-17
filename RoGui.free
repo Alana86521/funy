@@ -81,6 +81,7 @@ function RoGUI:CreateWindow(options)
 		end
 	end)
 
+
 	local tabs = {}
 	local tabCount = 0
 	local activeTab = nil
