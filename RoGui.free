@@ -12,6 +12,95 @@ local function createTween(instance, properties, time)
     return tween
 end
 
+function RoGUI:CreateColorPicker(tabFrame, options)
+    local colorPickerButton = Instance.new("TextButton")
+    colorPickerButton.Size = UDim2.new(1, -20, 0, 40)
+    colorPickerButton.Position = UDim2.new(0, 10, 0, #tabFrame:GetChildren() * 50)
+    colorPickerButton.Text = options.Name
+    colorPickerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    colorPickerButton.BackgroundColor3 = Color3.fromRGB(44, 44, 46)
+    colorPickerButton.BackgroundTransparency = 0.2
+    colorPickerButton.Font = Enum.Font.Gotham
+    colorPickerButton.TextSize = 20
+    colorPickerButton.BorderSizePixel = 0
+    colorPickerButton.Parent = tabFrame
+
+    local UICorner = Instance.new("UICorner", colorPickerButton)
+    UICorner.CornerRadius = UDim.new(0, 10)
+
+    local colorPickerFrame
+    colorPickerButton.MouseButton1Click:Connect(function()
+        if colorPickerFrame then
+            colorPickerFrame:Destroy()
+        end
+
+        -- Create the color picker UI
+        colorPickerFrame = Instance.new("Frame")
+        colorPickerFrame.Size = UDim2.new(0, 200, 0, 200)
+        colorPickerFrame.Position = UDim2.new(0.5, -100, 0.5, -100)
+        colorPickerFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        colorPickerFrame.BackgroundTransparency = 0.8
+        colorPickerFrame.Parent = game.Players.LocalPlayer.PlayerGui
+
+        local colorWheel = Instance.new("ImageLabel")
+        colorWheel.Size = UDim2.new(1, -20, 1, -20)
+        colorWheel.Position = UDim2.new(0, 10, 0, 10)
+        colorWheel.Image = "rbxassetid://111111111" -- Replace with your color wheel asset ID
+        colorWheel.BackgroundTransparency = 1
+        colorWheel.Parent = colorPickerFrame
+
+        -- Color selector
+        local colorSelector = Instance.new("Frame")
+        colorSelector.Size = UDim2.new(0, 10, 0, 10)
+        colorSelector.Position = UDim2.new(0.5, -5, 0.5, -5)
+        colorSelector.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Initial color (Red)
+        colorSelector.BorderSizePixel = 0
+        colorSelector.Parent = colorWheel
+
+        -- Update the color variable
+        local selectedColor = colorSelector.BackgroundColor3
+
+        local dragging
+        colorWheel.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = true
+            end
+        end)
+
+        colorWheel.InputChanged:Connect(function(input)
+            if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                -- Adjust colorSelector's position based on mouse position and update selected color
+                local mousePos = input.Position
+                local wheelCenter = colorWheel.Position + UDim2.new(0.5, 0, 0.5, 0)
+                local delta = mousePos - wheelCenter
+                colorSelector.Position = UDim2.new(0, delta.X, 0, delta.Y)
+
+                -- Update selected color variable
+                selectedColor = colorSelector.BackgroundColor3
+            end
+        end)
+
+        -- Close button for color picker
+        local closeButton = Instance.new("TextButton")
+        closeButton.Size = UDim2.new(0, 30, 0, 30)
+        closeButton.Position = UDim2.new(1, -40, 0, 10)
+        closeButton.Text = "X"
+        closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        closeButton.BackgroundTransparency = 0.2
+        closeButton.Font = Enum.Font.GothamBold
+        closeButton.TextSize = 18
+        closeButton.BorderSizePixel = 0
+        closeButton.Parent = colorPickerFrame
+        closeButton.MouseButton1Click:Connect(function()
+            colorPickerFrame:Destroy()
+        end)
+
+        -- Set color to selected color (update the variable)
+        options.Callback(selectedColor)
+    end)
+end
+
 function RoGUI:CreateWindow(options)
     local window = Instance.new("ScreenGui")
     window.Name = options.Name
