@@ -206,40 +206,31 @@ function RoGUI:CreateWindow(options)
         return textBox
     end
 
-    function RoGUI:CreateColorPicker(tabFrame, options)
-        local colorPickerButton = Instance.new("TextButton")
-        colorPickerButton.Size = UDim2.new(1, -20, 0, 40)
-        colorPickerButton.Position = UDim2.new(0, 10, 0, #tabFrame:GetChildren() * 50)
-        colorPickerButton.Text = options.Name
-        colorPickerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-        colorPickerButton.BackgroundColor3 = Color3.fromRGB(44, 44, 46)
-        colorPickerButton.BackgroundTransparency = 0.2
-        colorPickerButton.Font = Enum.Font.Gotham
-        colorPickerButton.TextSize = 20
-        colorPickerButton.BorderSizePixel = 0
-        colorPickerButton.Parent = tabFrame
+    function RoGUI:CreateColorPicker(tab, options)
+    -- Create the color picker button
+    local colorPickerButton = Instance.new("TextButton")
+    colorPickerButton.Name = "ColorPickerButton"
+    colorPickerButton.Size = UDim2.new(0, 200, 0, 50)
+    colorPickerButton.Text = options.ButtonText or "Pick Color"
+    colorPickerButton.Parent = tab
 
-        local UICorner = Instance.new("UICorner", colorPickerButton)
-        UICorner.CornerRadius = UDim.new(0, 10)
+    -- Initialize color frame but keep it hidden
+    local colorFrame = Instance.new("Frame")
+    colorFrame.Name = "ColorFrame"
+    colorFrame.Size = UDim2.new(0, 300, 0, 200)
+    colorFrame.BackgroundColor3 = options.InitialColor or Color3.fromRGB(255, 255, 255)
+    colorFrame.Position = UDim2.new(0, 0, 0, 60)
+    colorFrame.Visible = false
+    colorFrame.Parent = tab
 
-        local colorFrame = Instance.new("Frame")
-        colorFrame.Size = UDim2.new(0, 150, 0, 150)
-        colorFrame.Position = UDim2.new(0.5, -75, 0.5, -75)
-        colorFrame.BackgroundColor3 = options.InitialColor
-        colorFrame.Visible = false
-        colorFrame.Parent = window
-
-        local colorPickerUI = Instance.new("UICorner", colorFrame)
-        colorPickerUI.CornerRadius = UDim.new(0, 10)
-
-        colorPickerButton.MouseButton1Click:Connect(function()
-            colorFrame.Visible = not colorFrame.Visible
-        end)
-
-        return colorFrame
+    -- Color picker functionality (could be expanded later)
+    local function showColorPicker()
+        colorFrame.Visible = not colorFrame.Visible
     end
 
-    return window
+    -- Connect the button to toggle the color frame visibility
+    colorPickerButton.MouseButton1Click:Connect(showColorPicker)
 end
+
 
 return RoGUI
