@@ -202,77 +202,44 @@ function RoGUI:CreateWindow(options)
                 textBoxOptions.Callback(textBox.Text)
             end
         end)
+
+        return textBox
     end
 
     function RoGUI:CreateColorPicker(tabFrame, options)
-        -- Optional for color customization
-    end
+        local colorPickerButton = Instance.new("TextButton")
+        colorPickerButton.Size = UDim2.new(1, -20, 0, 40)
+        colorPickerButton.Position = UDim2.new(0, 10, 0, #tabFrame:GetChildren() * 50)
+        colorPickerButton.Text = options.Name
+        colorPickerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        colorPickerButton.BackgroundColor3 = Color3.fromRGB(44, 44, 46)
+        colorPickerButton.BackgroundTransparency = 0.2
+        colorPickerButton.Font = Enum.Font.Gotham
+        colorPickerButton.TextSize = 20
+        colorPickerButton.BorderSizePixel = 0
+        colorPickerButton.Parent = tabFrame
 
-    function RoGUI:CreateDropdown(tabFrame, dropOptions)
-        local dropdown = Instance.new("TextButton")
-        dropdown.Size = UDim2.new(1, -20, 0, 40)
-        dropdown.Position = UDim2.new(0, 10, 0, #tabFrame:GetChildren() * 50)
-        dropdown.Text = dropOptions.Name
-        dropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
-        dropdown.BackgroundColor3 = Color3.fromRGB(44, 44, 46)
-        dropdown.BackgroundTransparency = 0.2
-        dropdown.Font = Enum.Font.Gotham
-        dropdown.TextSize = 20
-        dropdown.BorderSizePixel = 0
-        dropdown.Parent = tabFrame
+        local UICorner = Instance.new("UICorner", colorPickerButton)
+        UICorner.CornerRadius = UDim.new(0, 10)
 
-        local dropdownCorner = Instance.new("UICorner", dropdown)
-        dropdownCorner.CornerRadius = UDim.new(0, 10)
+        local colorFrame = Instance.new("Frame")
+        colorFrame.Size = UDim2.new(0, 150, 0, 150)
+        colorFrame.Position = UDim2.new(0.5, -75, 0.5, -75)
+        colorFrame.BackgroundColor3 = options.InitialColor
+        colorFrame.Visible = false
+        colorFrame.Parent = window
 
-        local optionsFrame = Instance.new("Frame")
-        optionsFrame.Size = UDim2.new(1, -20, 0, 0)
-        optionsFrame.Position = UDim2.new(0, 10, 0, #tabFrame:GetChildren() * 50 + 50)
-        optionsFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-        optionsFrame.BackgroundTransparency = 0.2
-        optionsFrame.BorderSizePixel = 0
-        optionsFrame.Visible = false
-        optionsFrame.Parent = tabFrame
+        local colorPickerUI = Instance.new("UICorner", colorFrame)
+        colorPickerUI.CornerRadius = UDim.new(0, 10)
 
-        local optionsCorner = Instance.new("UICorner", optionsFrame)
-        optionsCorner.CornerRadius = UDim.new(0, 10)
-
-        dropdown.MouseButton1Click:Connect(function()
-            optionsFrame.Visible = not optionsFrame.Visible
-            optionsFrame.Size = UDim2.new(1, -20, 0, #dropOptions.Options * 40)
+        colorPickerButton.MouseButton1Click:Connect(function()
+            colorFrame.Visible = not colorFrame.Visible
         end)
 
-        for i, option in ipairs(dropOptions.Options) do
-            local optionButton = Instance.new("TextButton")
-            optionButton.Size = UDim2.new(1, -10, 0, 40)
-            optionButton.Position = UDim2.new(0, 5, 0, (i - 1) * 45)
-            optionButton.Text = option
-            optionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-            optionButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-            optionButton.BackgroundTransparency = 0.2
-            optionButton.Font = Enum.Font.Gotham
-            optionButton.TextSize = 18
-            optionButton.BorderSizePixel = 0
-            optionButton.Parent = optionsFrame
-
-            local optionCorner = Instance.new("UICorner", optionButton)
-            optionCorner.CornerRadius = UDim.new(0, 8)
-
-            optionButton.MouseButton1Click:Connect(function()
-                dropOptions.Callback(option)
-                dropdown.Text = option
-                optionsFrame.Visible = false
-            end)
-        end
+        return colorFrame
     end
 
-    return self
+    return window
 end
-
-UserInputService.InputBegan:Connect(function(input)
-    if input.KeyCode == RoGUI.ToggleKey then
-        RoGUI.Visible = not RoGUI.Visible
-        game.Players.LocalPlayer.PlayerGui:FindFirstChildOfClass("ScreenGui").Enabled = RoGUI.Visible
-    end
-end)
 
 return RoGUI
