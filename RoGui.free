@@ -7,354 +7,174 @@ RoGUI.Visible = true
 local MAX_TABS = 5
 
 local function createTween(instance, properties, time)
-    local tween = TweenService:Create(instance, TweenInfo.new(time, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), properties)
-    tween:Play()
-    return tween
-end
-
-function RoGUI:CreateColorPicker(tabFrame, options)
-    local colorPickerButton = Instance.new("TextButton")
-    colorPickerButton.Size = UDim2.new(1, -20, 0, 40)
-    colorPickerButton.Position = UDim2.new(0, 10, 0, #tabFrame:GetChildren() * 50)
-    colorPickerButton.Text = options.Name
-    colorPickerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    colorPickerButton.BackgroundColor3 = Color3.fromRGB(44, 44, 46)
-    colorPickerButton.BackgroundTransparency = 0.2
-    colorPickerButton.Font = Enum.Font.Gotham
-    colorPickerButton.TextSize = 20
-    colorPickerButton.BorderSizePixel = 0
-    colorPickerButton.Parent = tabFrame
-
-    local UICorner = Instance.new("UICorner", colorPickerButton)
-    UICorner.CornerRadius = UDim.new(0, 10)
-
-    local colorPickerFrame
-    colorPickerButton.MouseButton1Click:Connect(function()
-        if colorPickerFrame then
-            colorPickerFrame:Destroy()
-        end
-
-        colorPickerFrame = Instance.new("Frame")
-        colorPickerFrame.Size = UDim2.new(0, 200, 0, 200)
-        colorPickerFrame.Position = UDim2.new(0.5, -100, 0.5, -100)
-        colorPickerFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        colorPickerFrame.BackgroundTransparency = 0.8
-        colorPickerFrame.Parent = game.Players.LocalPlayer.PlayerGui
-
-        local colorWheel = Instance.new("ImageLabel")
-        colorWheel.Size = UDim2.new(1, -20, 1, -20)
-        colorWheel.Position = UDim2.new(0, 10, 0, 10)
-        colorWheel.Image = "rbxassetid://111111111"
-        colorWheel.BackgroundTransparency = 1
-        colorWheel.Parent = colorPickerFrame
-
-        local colorSelector = Instance.new("Frame")
-        colorSelector.Size = UDim2.new(0, 10, 0, 10)
-        colorSelector.Position = UDim2.new(0.5, -5, 0.5, -5)
-        colorSelector.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-        colorSelector.BorderSizePixel = 0
-        colorSelector.Parent = colorWheel
-
-        local selectedColor = colorSelector.BackgroundColor3
-
-        local dragging
-        colorWheel.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                dragging = true
-            end
-        end)
-
-        colorWheel.InputChanged:Connect(function(input)
-            if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-                local mousePos = input.Position
-                local wheelCenter = colorWheel.Position + UDim2.new(0.5, 0, 0.5, 0)
-                local delta = mousePos - wheelCenter
-                colorSelector.Position = UDim2.new(0, delta.X, 0, delta.Y)
-
-                selectedColor = colorSelector.BackgroundColor3
-            end
-        end)
-
-        local closeButton = Instance.new("TextButton")
-        closeButton.Size = UDim2.new(0, 30, 0, 30)
-        closeButton.Position = UDim2.new(1, -40, 0, 10)
-        closeButton.Text = "X"
-        closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-        closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-        closeButton.BackgroundTransparency = 0.2
-        closeButton.Font = Enum.Font.GothamBold
-        closeButton.TextSize = 18
-        closeButton.BorderSizePixel = 0
-        closeButton.Parent = colorPickerFrame
-        closeButton.MouseButton1Click:Connect(function()
-            colorPickerFrame:Destroy()
-        end)
-
-        options.Callback(selectedColor)
-    end)
+	local tween = TweenService:Create(instance, TweenInfo.new(time, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), properties)
+	tween:Play()
+	return tween
 end
 
 function RoGUI:CreateWindow(options)
-    local window = Instance.new("ScreenGui")
-    window.Name = options.Name
-    window.Parent = game:GetService('CoreGui')
+	local window = Instance.new("ScreenGui")
+	window.Name = options.Name
+	window.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	window.ResetOnSpawn = false
 
-    window.ResetOnSpawn = false
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(0, 500, 0, 350)
+	frame.Position = UDim2.new(0.5, -250, 0.5, -175)
+	frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	frame.BackgroundTransparency = 0.2
+	frame.BorderSizePixel = 0
+	frame.Parent = window
 
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 500, 0, 350)
-    frame.Position = UDim2.new(0.5, -250, 0.5, -175)
-    frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    frame.BackgroundTransparency = 0.2
-    frame.BorderSizePixel = 0
-    frame.Parent = window
+	local cornerFrame = Instance.new("UICorner", frame)
+	cornerFrame.CornerRadius = UDim.new(0, 15)
 
-    local cornerFrame = Instance.new("UICorner", frame)
-    cornerFrame.CornerRadius = UDim.new(0, 15)
+	local tabContainer = Instance.new("Frame")
+	tabContainer.Size = UDim2.new(0, 120, 1, -60)
+	tabContainer.Position = UDim2.new(0, 10, 0, 50)
+	tabContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+	tabContainer.BackgroundTransparency = 0.2
+	tabContainer.BorderSizePixel = 0
+	tabContainer.Parent = frame
 
-    local closeButton = Instance.new("TextButton")
-    closeButton.Size = UDim2.new(0, 30, 0, 30)
-    closeButton.Position = UDim2.new(1, -40, 0, 10)
-    closeButton.Text = "X"
-    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-    closeButton.BackgroundTransparency = 0.2
-    closeButton.Font = Enum.Font.GothamBold
-    closeButton.TextSize = 18
-    closeButton.BorderSizePixel = 0
-    closeButton.Parent = frame
-    closeButton.MouseButton1Click:Connect(function()
-        window:Destroy()
-    end)
+	local tabCorner = Instance.new("UICorner", tabContainer)
+	tabCorner.CornerRadius = UDim.new(0, 12)
 
-    local cornerClose = Instance.new("UICorner", closeButton)
-    cornerClose.CornerRadius = UDim.new(0, 8)
+	local title = Instance.new("TextLabel")
+	title.Size = UDim2.new(0, 150, 0, 30)
+	title.Position = UDim2.new(0, 10, 0, 10)
+	title.Text = options.Name
+	title.TextColor3 = Color3.fromRGB(255, 255, 255)
+	title.BackgroundTransparency = 0.99999999
+	title.Font = Enum.Font.GothamBold
+	title.TextSize = 20
+	title.TextXAlignment = Enum.TextXAlignment.Left
+	title.Parent = frame
 
-    local tabContainer = Instance.new("Frame")
-    tabContainer.Size = UDim2.new(0, 120, 1, -60)
-    tabContainer.Position = UDim2.new(0, 10, 0, 50)
-    tabContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    tabContainer.BackgroundTransparency = 0.2
-    tabContainer.BorderSizePixel = 0
-    tabContainer.Parent = frame
+	local dragging, dragInput, dragStart, startPos
 
-    local tabCorner = Instance.new("UICorner", tabContainer)
-    tabCorner.CornerRadius = UDim.new(0, 12)
+	local tabCorner = Instance.new("UICorner")
+	tabCorner.CornerRadius = UDim.new(0, 12)
+	tabCorner.Parent = title
 
-    local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(0, 150, 0, 30)
-    title.Position = UDim2.new(0, 10, 0, 10)
-    title.Text = options.Name
-    title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    title.BackgroundTransparency = 1
-    title.Font = Enum.Font.GothamBold
-    title.TextSize = 20
-    title.TextXAlignment = Enum.TextXAlignment.Left
-    title.Parent = frame
+	local function updateDrag(input)
+		local delta = input.Position - dragStart
+		frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
 
-    local dragging, dragInput, dragStart, startPos
+	title.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = true
+			dragStart = input.Position
+			startPos = frame.Position
+			input.Changed:Connect(function()
+				if input.UserInputState ~= Enum.UserInputState.Change then
+					dragging = false
+				end
+			end)
+		end
+	end)
 
-    local function updateDrag(input)
-        local delta = input.Position - dragStart
-        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
+	frame.InputChanged:Connect(function(input)
+		if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+			updateDrag(input)
+		end
+	end)
 
-    title.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = frame.Position
-            input.Changed:Connect(function()
-                if input.UserInputState ~= Enum.UserInputState.Change then
-                    dragging = false
-                end
-            end)
-        end
-    end)
+	local tabs = {}
+	local tabCount = 0
+	local activeTab = nil
 
-    frame.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            updateDrag(input)
-        end
-    end)
+	local contentFrame = Instance.new("Frame")
+	contentFrame.Size = UDim2.new(1, -140, 1, -20)
+	contentFrame.Position = UDim2.new(0, 130, 0, 10)
+	contentFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+	contentFrame.BackgroundTransparency = 0.2
+	contentFrame.BorderSizePixel = 0
+	contentFrame.Parent = frame
 
-    local tabs = {}
-    local tabCount = 0
-    local activeTab = nil
+	local contentCorner = Instance.new("UICorner", contentFrame)
+	contentCorner.CornerRadius = UDim.new(0, 12)
 
-    local contentFrame = Instance.new("Frame")
-    contentFrame.Size = UDim2.new(1, -140, 1, -20)
-    contentFrame.Position = UDim2.new(0, 130, 0, 10)
-    contentFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    contentFrame.BackgroundTransparency = 0.2
-    contentFrame.BorderSizePixel = 0
-    contentFrame.Parent = frame
+	function RoGUI:CreateTab(tabName)
+		if tabCount >= MAX_TABS then return end
+		tabCount += 1
 
-    local contentCorner = Instance.new("UICorner", contentFrame)
-    contentCorner.CornerRadius = UDim.new(0, 12)
+		local tabButton = Instance.new("TextButton")
+		tabButton.Size = UDim2.new(1, -10, 0, 40)
+		tabButton.Position = UDim2.new(0, 5, 0, 5 + (tabCount - 1) * 45)
+		tabButton.Text = tabName
+		tabButton.TextColor3 = Color3.fromRGB(200, 200, 200)
+		tabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+		tabButton.BackgroundTransparency = 0.3
+		tabButton.Font = Enum.Font.Gotham
+		tabButton.TextSize = 18
+		tabButton.BorderSizePixel = 0
+		tabButton.Parent = tabContainer
 
-    function RoGUI:CreateTab(tabName)
-        if tabCount >= MAX_TABS then return end
-        tabCount = tabCount + 1;
+		local tabCorner = Instance.new("UICorner", tabButton)
+		tabCorner.CornerRadius = UDim.new(0, 8)
 
-        local tabButton = Instance.new("TextButton")
-        tabButton.Size = UDim2.new(1, -10, 0, 40)
-        tabButton.Position = UDim2.new(0, 5, 0, 5 + (tabCount - 1) * 45)
-        tabButton.Text = tabName
-        tabButton.TextColor3 = Color3.fromRGB(200, 200, 200)
-        tabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        tabButton.BackgroundTransparency = 0.3
-        tabButton.Font = Enum.Font.Gotham
-        tabButton.TextSize = 18
-        tabButton.BorderSizePixel = 0
-        tabButton.Parent = tabContainer
+		local tabFrame = Instance.new("ScrollingFrame")
+		tabFrame.Size = UDim2.new(1, 0, 1, 0)
+		tabFrame.CanvasSize = UDim2.new(0, 0, 0, 2000)
+		tabFrame.BackgroundTransparency = 1
+		tabFrame.Visible = false
+		tabFrame.ScrollBarThickness = 0
+		tabFrame.Parent = contentFrame
 
-        local tabCorner = Instance.new("UICorner", tabButton)
-        tabCorner.CornerRadius = UDim.new(0, 8)
+		tabs[tabName] = tabFrame
 
-        local tabFrame = Instance.new("ScrollingFrame")
-        tabFrame.Size = UDim2.new(1, 0, 1, 0)
-        tabFrame.CanvasSize = UDim2.new(0, 0, 0, 2000)
-        tabFrame.BackgroundTransparency = 1
-        tabFrame.Visible = false
-        tabFrame.ScrollBarThickness = 0
-        tabFrame.Parent = contentFrame
+		tabButton.MouseButton1Click:Connect(function()
+			for _, frame in pairs(tabs) do
+				frame.Visible = false
+			end
+			for _, button in pairs(tabContainer:GetChildren()) do
+				if button:IsA("TextButton") then
+					button.BackgroundTransparency = 0.3
+				end
+			end
+			tabFrame.Visible = true
+			tabButton.BackgroundTransparency = 0.1
+		end)
 
-        tabs[tabName] = tabFrame
+		return tabFrame
+	end
 
-        tabButton.MouseButton1Click:Connect(function()
-            for _, frame in pairs(tabs) do
-                frame.Visible = false
-            end
-            for _, button in pairs(tabContainer:GetChildren()) do
-                if button:IsA("TextButton") then
-                    button.BackgroundTransparency = 0.3
-                end
-            end
-            tabFrame.Visible = true
-            tabButton.BackgroundTransparency = 0.1
-        end)
+	function RoGUI:CreateButton(tabFrame, buttonOptions)
+		local button = Instance.new("TextButton")
+		button.Size = UDim2.new(1, -20, 0, 40)
+		button.Position = UDim2.new(0, 10, 0, #tabFrame:GetChildren() * 50)
+		button.Text = buttonOptions.Name
+		button.TextColor3 = Color3.fromRGB(255, 255, 255)
+		button.BackgroundColor3 = Color3.fromRGB(44, 44, 46)
+		button.BackgroundTransparency = 0.2
+		button.Font = Enum.Font.Gotham
+		button.TextSize = 20
+		button.BorderSizePixel = 0
+		button.Parent = tabFrame
 
-        return tabFrame
-    end
+		local UICorner = Instance.new("UICorner", button)
+		UICorner.CornerRadius = UDim.new(0, 10)
 
-    function RoGUI:CreateButton(tabFrame, buttonOptions)
-        local button = Instance.new("TextButton")
-        button.Size = UDim2.new(1, -20, 0, 40)
-        button.Position = UDim2.new(0, 10, 0, #tabFrame:GetChildren() * 50)
-        button.Text = buttonOptions.Name
-        button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        button.BackgroundColor3 = Color3.fromRGB(44, 44, 46)
-        button.BackgroundTransparency = 0.2
-        button.Font = Enum.Font.Gotham
-        button.TextSize = 20
-        button.BorderSizePixel = 0
-        button.Parent = tabFrame
+		button.MouseButton1Click:Connect(buttonOptions.Callback)
+		button.MouseEnter:Connect(function()
+			createTween(button, {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}, 0.2)
+		end)
+		button.MouseLeave:Connect(function()
+			createTween(button, {BackgroundColor3 = Color3.fromRGB(44, 44, 46)}, 0.2)
+		end)
+	end
 
-        local UICorner = Instance.new("UICorner", button)
-        UICorner.CornerRadius = UDim.new(0, 10)
+	UserInputService.InputBegan:Connect(function(input, gameProcessed)
+		if gameProcessed then return end
+		if input.KeyCode == RoGUI.ToggleKey then
+			RoGUI.Visible = not RoGUI.Visible
+			frame.Visible = RoGUI.Visible
+		end
+	end)
 
-        button.MouseButton1Click:Connect(buttonOptions.Callback)
-        button.MouseEnter:Connect(function()
-            createTween(button, {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}, 0.2)
-        end)
-        button.MouseLeave:Connect(function()
-            createTween(button, {BackgroundColor3 = Color3.fromRGB(44, 44, 46)}, 0.2)
-        end)
-    end
-
-    function RoGUI:CreateTextBox(tabFrame, textBoxOptions)
-        local textBox = Instance.new("TextBox")
-        textBox.Size = UDim2.new(1, -20, 0, 40)
-        textBox.Position = UDim2.new(0, 10, 0, #tabFrame:GetChildren() * 50)
-        textBox.Text = textBoxOptions.Placeholder or "Enter text"
-        textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-        textBox.BackgroundColor3 = Color3.fromRGB(44, 44, 46)
-        textBox.BackgroundTransparency = 0.2
-        textBox.Font = Enum.Font.Gotham
-        textBox.TextSize = 20
-        textBox.BorderSizePixel = 0
-        textBox.ClearTextOnFocus = false
-        textBox.Parent = tabFrame
-
-        local UICorner = Instance.new("UICorner", textBox)
-        UICorner.CornerRadius = UDim.new(0, 10)
-
-        textBox.FocusLost:Connect(function(enterPressed)
-            if enterPressed and textBoxOptions.Callback then
-                textBoxOptions.Callback(textBox.Text)
-            end
-        end)
-    end
-
-    function RoGUI:CreateColorPicker(tabFrame, options)
-    end
-
-    function RoGUI:CreateDropdown(tabFrame, dropOptions)
-        local dropdown = Instance.new("TextButton")
-        dropdown.Size = UDim2.new(1, -20, 0, 40)
-        dropdown.Position = UDim2.new(0, 10, 0, #tabFrame:GetChildren() * 50)
-        dropdown.Text = dropOptions.Name
-        dropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
-        dropdown.BackgroundColor3 = Color3.fromRGB(44, 44, 46)
-        dropdown.BackgroundTransparency = 0.2
-        dropdown.Font = Enum.Font.Gotham
-        dropdown.TextSize = 20
-        dropdown.BorderSizePixel = 0
-        dropdown.Parent = tabFrame
-
-        local dropdownCorner = Instance.new("UICorner", dropdown)
-        dropdownCorner.CornerRadius = UDim.new(0, 10)
-
-        local optionsFrame = Instance.new("Frame")
-        optionsFrame.Size = UDim2.new(1, -20, 0, 0)
-        optionsFrame.Position = UDim2.new(0, 10, 0, #tabFrame:GetChildren() * 50 + 50)
-        optionsFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-        optionsFrame.BackgroundTransparency = 0.2
-        optionsFrame.BorderSizePixel = 0
-        optionsFrame.Visible = false
-        optionsFrame.Parent = tabFrame
-
-        local optionsCorner = Instance.new("UICorner", optionsFrame)
-        optionsCorner.CornerRadius = UDim.new(0, 10)
-
-        dropdown.MouseButton1Click:Connect(function()
-            optionsFrame.Visible = not optionsFrame.Visible
-            optionsFrame.Size = UDim2.new(1, -20, 0, #dropOptions.Options * 40)
-        end)
-
-        for i, option in ipairs(dropOptions.Options) do
-            local optionButton = Instance.new("TextButton")
-            optionButton.Size = UDim2.new(1, -10, 0, 40)
-            optionButton.Position = UDim2.new(0, 5, 0, (i - 1) * 45)
-            optionButton.Text = option
-            optionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-            optionButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-            optionButton.BackgroundTransparency = 0.2
-            optionButton.Font = Enum.Font.Gotham
-            optionButton.TextSize = 18
-            optionButton.BorderSizePixel = 0
-            optionButton.Parent = optionsFrame
-
-            local optionCorner = Instance.new("UICorner", optionButton)
-            optionCorner.CornerRadius = UDim.new(0, 8)
-
-            optionButton.MouseButton1Click:Connect(function()
-                dropOptions.Callback(option)
-                dropdown.Text = option
-                optionsFrame.Visible = false
-            end)
-        end
-    end
-
-    return self
+	return RoGUI
 end
-
-UserInputService.InputBegan:Connect(function(input)
-    if input.KeyCode == RoGUI.ToggleKey then
-        RoGUI.Visible = not RoGUI.Visible
-        game.Players.LocalPlayer.PlayerGui:FindFirstChildOfClass("ScreenGui").Enabled = RoGUI.Visible
-    end
-end)
 
 return RoGUI
