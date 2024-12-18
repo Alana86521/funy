@@ -104,9 +104,7 @@ end
 function RoGUI:CreateWindow(options)
     local window = Instance.new("ScreenGui")
     window.Name = options.Name
-    local player = game.Players.LocalPlayer
-    local playerGui = player:WaitForChild("PlayerGui")
-    window.Parent = playerGui
+    window.parent = game:GetService('CoreGui')
 
     window.ResetOnSpawn = false
 
