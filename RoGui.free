@@ -176,3 +176,5 @@ function RoGUI:CreateWindow(options)
 
     return RoGUI
 end
+
+return RoGUI
