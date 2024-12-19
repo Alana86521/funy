@@ -29,6 +29,22 @@ function RoGUI:CreateWindow(options)
 	local cornerFrame = Instance.new("UICorner", frame)
 	cornerFrame.CornerRadius = UDim.new(0, 15)
 
+	local exitButton = Instance.new("TextButton")
+	exitButton.Size = UDim2.new(0, 30, 0, 30)
+	exitButton.Position = UDim2.new(1, -40, 0, 10)
+	exitButton.Text = "X"
+	exitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+	exitButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+	exitButton.Font = Enum.Font.GothamBold
+	exitButton.TextSize = 18
+	exitButton.Parent = frame
+	local exitCorner = Instance.new("UICorner", exitButton)
+	exitCorner.CornerRadius = UDim.new(0, 6)
+
+	exitButton.MouseButton1Click:Connect(function()
+		window:Destroy()
+	end)
+
 	local tabContainer = Instance.new("Frame")
 	tabContainer.Size = UDim2.new(0, 120, 1, -60)
 	tabContainer.Position = UDim2.new(0, 10, 0, 50)
@@ -45,17 +61,13 @@ function RoGUI:CreateWindow(options)
 	title.Position = UDim2.new(0, 10, 0, 10)
 	title.Text = options.Name
 	title.TextColor3 = Color3.fromRGB(255, 255, 255)
-	title.BackgroundTransparency = 0.99999999
+	title.BackgroundTransparency = 1
 	title.Font = Enum.Font.GothamBold
 	title.TextSize = 20
 	title.TextXAlignment = Enum.TextXAlignment.Left
 	title.Parent = frame
 
 	local dragging, dragInput, dragStart, startPos
-
-	local tabCorner = Instance.new("UICorner")
-	tabCorner.CornerRadius = UDim.new(0, 12)
-	tabCorner.Parent = title
 
 	local function updateDrag(input)
 		local delta = input.Position - dragStart
